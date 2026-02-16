@@ -156,6 +156,24 @@ describe('findMeasurements', () => {
     });
   });
 
+  describe('smart/curly quotes', () => {
+    it('matches feet with right single quote \u2019', () => {
+      const results = findMeasurements('6\u2019');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'feet');
+    });
+    it('matches inches with right double quote \u201D', () => {
+      const results = findMeasurements('12\u201D');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'inches');
+    });
+    it('matches combined with curly quotes 5\u20193\u201D', () => {
+      const results = findMeasurements('5\u20193\u201D');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'combined_ft_in');
+    });
+  });
+
   describe('priority ordering', () => {
     it('matches combined before standalone when text has both patterns', () => {
       const results = findMeasurements('The cable is 5 feet 3 inches long');

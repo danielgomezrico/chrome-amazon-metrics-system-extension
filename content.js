@@ -4,7 +4,7 @@
   var PATTERNS = [
     {
       name: "fractional_ft_in",
-      regex: /(\d+)\s*['\u2032]\s*(\d+)\s+(\d+)\/(\d+)\s*["\u2033]/gi,
+      regex: /(\d+)\s*['\u2032\u2019]\s*(\d+)\s+(\d+)\/(\d+)\s*["\u2033\u201D]/gi,
       parse(m) {
         return {
           type: "fractional_ft_in",
@@ -17,7 +17,7 @@
     },
     {
       name: "combined_ft_in",
-      regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft|['\u2032])\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in(?:\.)?|["\u2033])/gi,
+      regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft|['\u2032\u2019])\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in(?:\.)?|["\u2033\u201D])/gi,
       parse(m) {
         return {
           type: "combined_ft_in",
@@ -30,7 +30,7 @@
     },
     {
       name: "dimensions_3d",
-      regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033])/gi,
+      regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033\u201D])/gi,
       parse(m) {
         return {
           type: "dimensions_3d",
@@ -42,7 +42,7 @@
     },
     {
       name: "dimensions_2d",
-      regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033])/gi,
+      regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033\u201D])/gi,
       parse(m) {
         return {
           type: "dimensions_2d",
@@ -54,7 +54,7 @@
     },
     {
       name: "feet",
-      regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft\.|ft\b|['\u2032])(?!\s*\d)/gi,
+      regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft\.|ft\b|['\u2032\u2019])(?!\s*\d)/gi,
       parse(m) {
         return {
           type: "feet",
@@ -66,7 +66,7 @@
     },
     {
       name: "inches",
-      regex: /(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|["\u2033])/gi,
+      regex: /(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|["\u2033\u201D])/gi,
       parse(m) {
         return {
           type: "inches",

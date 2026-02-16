@@ -3,7 +3,7 @@ const DIRECTION_MARKERS = /[\u200e\u200f\u200b]/g;
 const PATTERNS = [
   {
     name: 'fractional_ft_in',
-    regex: /(\d+)\s*['\u2032]\s*(\d+)\s+(\d+)\/(\d+)\s*["\u2033]/gi,
+    regex: /(\d+)\s*['\u2032\u2019]\s*(\d+)\s+(\d+)\/(\d+)\s*["\u2033\u201D]/gi,
     parse(m) {
       return {
         type: 'fractional_ft_in',
@@ -16,7 +16,7 @@ const PATTERNS = [
   },
   {
     name: 'combined_ft_in',
-    regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft|['\u2032])\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in(?:\.)?|["\u2033])/gi,
+    regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft|['\u2032\u2019])\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in(?:\.)?|["\u2033\u201D])/gi,
     parse(m) {
       return {
         type: 'combined_ft_in',
@@ -29,7 +29,7 @@ const PATTERNS = [
   },
   {
     name: 'dimensions_3d',
-    regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033])/gi,
+    regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033\u201D])/gi,
     parse(m) {
       return {
         type: 'dimensions_3d',
@@ -41,7 +41,7 @@ const PATTERNS = [
   },
   {
     name: 'dimensions_2d',
-    regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033])/gi,
+    regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033\u201D])/gi,
     parse(m) {
       return {
         type: 'dimensions_2d',
@@ -53,7 +53,7 @@ const PATTERNS = [
   },
   {
     name: 'feet',
-    regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft\.|ft\b|['\u2032])(?!\s*\d)/gi,
+    regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft\.|ft\b|['\u2032\u2019])(?!\s*\d)/gi,
     parse(m) {
       return {
         type: 'feet',
@@ -65,7 +65,7 @@ const PATTERNS = [
   },
   {
     name: 'inches',
-    regex: /(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|["\u2033])/gi,
+    regex: /(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|["\u2033\u201D])/gi,
     parse(m) {
       return {
         type: 'inches',

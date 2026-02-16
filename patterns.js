@@ -65,7 +65,7 @@ const PATTERNS = [
   },
   {
     name: 'inches',
-    regex: /(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|["\u2033\u201D])/gi,
+    regex: /(\d+(?:\.\d+)?)\s*(?:inches|inch|in\b(?!\s*(?:the|a|an|stock|store|cart|total|color|this|that|our|your|my|its|one|all|any|no|each|every|some|most|both|part|front|back|between|addition|order|length))|in\.|["\u2033\u201D])/gi,
     parse(m) {
       return {
         type: 'inches',

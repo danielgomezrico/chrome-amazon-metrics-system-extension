@@ -83,6 +83,13 @@ describe('replaceWithMetric', () => {
     );
   });
 
+  it('converts "36 in" with bare in', () => {
+    assert.equal(
+      replaceWithMetric('36 in'),
+      '36 in (91.44 cm)'
+    );
+  });
+
   it('does not double-convert dimensions with existing metric', () => {
     assert.equal(
       replaceWithMetric('10 x 5 x 2 inches (25.40 \u00D7 12.70 \u00D7 5.08 cm)'),

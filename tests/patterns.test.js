@@ -107,6 +107,47 @@ describe('findMeasurements', () => {
     });
   });
 
+  describe('bare in (standalone inches)', () => {
+    it('matches "36 in" at end of string', () => {
+      const results = findMeasurements('36 in');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'inches');
+      assert.equal(results[0].value, 36);
+    });
+    it('matches "36 in," followed by comma', () => {
+      const results = findMeasurements('36 in, very nice');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'inches');
+      assert.equal(results[0].value, 36);
+    });
+    it('matches "2.5 in" with decimal', () => {
+      const results = findMeasurements('2.5 in');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'inches');
+      assert.equal(results[0].value, 2.5);
+    });
+    it('rejects "5 in stock"', () => {
+      const results = findMeasurements('5 in stock');
+      assert.equal(results.length, 0);
+    });
+    it('rejects "5 in the box"', () => {
+      const results = findMeasurements('5 in the box');
+      assert.equal(results.length, 0);
+    });
+    it('rejects "available in all colors"', () => {
+      const results = findMeasurements('available in all colors');
+      assert.equal(results.length, 0);
+    });
+    it('rejects "5 in cart"', () => {
+      const results = findMeasurements('5 in cart');
+      assert.equal(results.length, 0);
+    });
+    it('rejects "comes in a box"', () => {
+      const results = findMeasurements('comes in a box');
+      assert.equal(results.length, 0);
+    });
+  });
+
   describe('no false positives', () => {
     it('ignores prices like $10', () => {
       const results = findMeasurements('Only $10 in stock');

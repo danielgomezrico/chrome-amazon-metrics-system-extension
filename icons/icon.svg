@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#232f3e"/>
+  <text x="64" y="54" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#ff9900">in</text>
+  <text x="64" y="68" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#ffffff">→</text>
+  <text x="64" y="98" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#ff9900">cm</text>
+</svg>

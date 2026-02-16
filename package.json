@@ -1,0 +1,13 @@
+{
+  "name": "chrome-metrics-changer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/content.js --bundle --format=iife --outfile=content.js",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25"
+  }
+}

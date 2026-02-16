@@ -1,0 +1,112 @@
+const DIRECTION_MARKERS = /[\u200e\u200f\u200b]/g;
+
+const PATTERNS = [
+  {
+    name: 'fractional_ft_in',
+    regex: /(\d+)\s*['\u2032]\s*(\d+)\s+(\d+)\/(\d+)\s*["\u2033]/gi,
+    parse(m) {
+      return {
+        type: 'fractional_ft_in',
+        feet: parseFloat(m[1]),
+        inches: parseFloat(m[2]) + parseFloat(m[3]) / parseFloat(m[4]),
+        matched: m[0],
+        index: m.index,
+      };
+    },
+  },
+  {
+    name: 'combined_ft_in',
+    regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft|['\u2032])\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in(?:\.)?|["\u2033])/gi,
+    parse(m) {
+      return {
+        type: 'combined_ft_in',
+        feet: parseFloat(m[1]),
+        inches: parseFloat(m[2]),
+        matched: m[0],
+        index: m.index,
+      };
+    },
+  },
+  {
+    name: 'dimensions_3d',
+    regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033])/gi,
+    parse(m) {
+      return {
+        type: 'dimensions_3d',
+        values: [parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3])],
+        matched: m[0],
+        index: m.index,
+      };
+    },
+  },
+  {
+    name: 'dimensions_2d',
+    regex: /(\d+(?:\.\d+)?)\s*[x\u00D7]\s*(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|in\b|["\u2033])/gi,
+    parse(m) {
+      return {
+        type: 'dimensions_2d',
+        values: [parseFloat(m[1]), parseFloat(m[2])],
+        matched: m[0],
+        index: m.index,
+      };
+    },
+  },
+  {
+    name: 'feet',
+    regex: /(\d+(?:\.\d+)?)\s*(?:feet|foot|ft\.|ft\b|['\u2032])(?!\s*\d)/gi,
+    parse(m) {
+      return {
+        type: 'feet',
+        value: parseFloat(m[1]),
+        matched: m[0],
+        index: m.index,
+      };
+    },
+  },
+  {
+    name: 'inches',
+    regex: /(\d+(?:\.\d+)?)\s*(?:inches|inch|in\.|["\u2033])/gi,
+    parse(m) {
+      return {
+        type: 'inches',
+        value: parseFloat(m[1]),
+        matched: m[0],
+        index: m.index,
+      };
+    },
+  },
+];
+
+const METRIC_PATTERN = /\d+(?:\.\d+)?\s*(?:cm|mm|m\b|meters?|centimeters?|millimeters?)/i;
+
+export function findMeasurements(text) {
+  if (METRIC_PATTERN.test(text)) {
+    return [];
+  }
+
+  const cleaned = text.replace(DIRECTION_MARKERS, '');
+
+  const results = [];
+  const coveredRanges = [];
+
+  for (const pattern of PATTERNS) {
+    pattern.regex.lastIndex = 0;
+    let match;
+    while ((match = pattern.regex.exec(cleaned)) !== null) {
+      const start = match.index;
+      const end = start + match[0].length;
+
+      const overlaps = coveredRanges.some(
+        (range) => start < range.end && end > range.start
+      );
+      if (overlaps) continue;
+
+      const parsed = pattern.parse(match);
+      results.push(parsed);
+      coveredRanges.push({ start, end });
+    }
+  }
+
+  results.sort((a, b) => a.index - b.index);
+  return results;
+}

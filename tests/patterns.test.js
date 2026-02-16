@@ -130,6 +130,32 @@ describe('findMeasurements', () => {
     });
   });
 
+  describe('already-converted (metric follows in parens)', () => {
+    it('skips feet already followed by metric conversion', () => {
+      const results = findMeasurements('6.6FT (2.01 m)');
+      assert.equal(results.length, 0);
+    });
+    it('skips inches already followed by metric conversion', () => {
+      const results = findMeasurements('36 inches (91.44 cm)');
+      assert.equal(results.length, 0);
+    });
+    it('skips dimensions already followed by metric conversion', () => {
+      const results = findMeasurements('10 x 5 x 2 inches (25.40 \u00D7 12.70 \u00D7 5.08 cm)');
+      assert.equal(results.length, 0);
+    });
+    it('still converts when no metric follows', () => {
+      const results = findMeasurements('6.6FT cable');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'feet');
+    });
+    it('still converts in text that has metric elsewhere', () => {
+      // "m)" appears later but not immediately after the match
+      const results = findMeasurements('Cable is 6.6FT and rated 5m bandwidth');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'feet');
+    });
+  });
+
   describe('priority ordering', () => {
     it('matches combined before standalone when text has both patterns', () => {
       const results = findMeasurements('The cable is 5 feet 3 inches long');

@@ -77,13 +77,10 @@ const PATTERNS = [
   },
 ];
 
-const METRIC_PATTERN = /\d+(?:\.\d+)?\s*(?:cm|mm|m\b|meters?|centimeters?|millimeters?)/i;
+// Pattern to detect if a match is already followed by a metric conversion in parens
+const ALREADY_CONVERTED = /^\s*\(\d+(?:\.\d+)?(?:\s*[×x]\s*\d+(?:\.\d+)?)*\s*(?:cm|m)\)/;
 
 export function findMeasurements(text) {
-  if (METRIC_PATTERN.test(text)) {
-    return [];
-  }
-
   const cleaned = text.replace(DIRECTION_MARKERS, '');
 
   const results = [];
@@ -100,6 +97,10 @@ export function findMeasurements(text) {
         (range) => start < range.end && end > range.start
       );
       if (overlaps) continue;
+
+      // Skip if this match is already followed by a metric conversion in parens
+      const afterMatch = cleaned.slice(end);
+      if (ALREADY_CONVERTED.test(afterMatch)) continue;
 
       const parsed = pattern.parse(match);
       results.push(parsed);

@@ -4,6 +4,10 @@
 (function () {
   'use strict';
 
+  const LOG_PREFIX = '[im2m]';
+  function log(...args) { console.log(LOG_PREFIX, ...args); }
+  function logWarn(...args) { console.warn(LOG_PREFIX, ...args); }
+
   // ===== Conversion Logic =====
   const CM_PER_INCH = 2.54;
   const CM_PER_FOOT = 30.48;
@@ -38,7 +42,7 @@
 
   // ===== Pattern Matching =====
   const DIRECTION_MARKERS = /[\u200e\u200f\u200b]/g;
-  const METRIC_PATTERN = /\d+(?:\.\d+)?\s*(?:cm|mm|m\b|meters?|centimeters?|millimeters?)/i;
+  const ALREADY_CONVERTED = /^\s*\(\d+(?:\.\d+)?(?:\s*[×x]\s*\d+(?:\.\d+)?)*\s*(?:cm|m)\)/;
 
   const PATTERNS = [
     {
@@ -96,28 +100,20 @@
   ]);
   const SKIP_SELECTORS = '.a-price, .a-price-whole, .a-price-fraction';
 
-  // ===== Amazon container selectors (scoped scanning) =====
-  const AMAZON_CONTAINERS = [
-    '#productDetails_techSpec_section_1',
-    '#productDetails_detailBullets_sections1',
-    '#detailBullets_feature_div',
-    '#detailBulletsWrapper_feature_div',
-    '#feature-bullets',
-    '#productTitle',
-    '#productOverview_feature_div',
-    '#productDescription',
-    '#aplus_feature_div',
-    '#variation_size_name',
-    '#technicalSpecifications_section_1',
-    'table.prodDetTable',
-  ];
-
   function shouldSkipNode(node) {
     let el = node.parentElement;
     while (el) {
-      if (SKIP_TAGS.has(el.tagName)) return true;
-      if (el.matches && el.matches(SKIP_SELECTORS)) return true;
-      if (el.hasAttribute && el.hasAttribute(CONVERTED_ATTR)) return true;
+      if (SKIP_TAGS.has(el.tagName)) {
+        log('skip (tag):', el.tagName, JSON.stringify(node.textContent.slice(0, 60)));
+        return true;
+      }
+      if (el.matches && el.matches(SKIP_SELECTORS)) {
+        log('skip (price):', JSON.stringify(node.textContent.slice(0, 60)));
+        return true;
+      }
+      if (el.hasAttribute && el.hasAttribute(CONVERTED_ATTR)) {
+        return true; // already converted, skip silently
+      }
       el = el.parentElement;
     }
     return false;
@@ -128,8 +124,6 @@
     if (!original || original.trim().length === 0) return;
 
     const cleaned = original.replace(DIRECTION_MARKERS, '');
-
-    if (METRIC_PATTERN.test(cleaned)) return;
 
     const measurements = [];
     const coveredRanges = [];
@@ -145,6 +139,13 @@
         );
         if (overlaps) continue;
 
+        // Skip if already followed by a metric conversion in parens
+        const afterMatch = cleaned.slice(end);
+        if (ALREADY_CONVERTED.test(afterMatch)) {
+          log('skip (already has metric):', JSON.stringify(match[0]), '→', JSON.stringify(afterMatch.slice(0, 30)));
+          continue;
+        }
+
         measurements.push({
           index: start,
           length: match[0].length,
@@ -159,21 +160,33 @@
 
     measurements.sort((a, b) => a.index - b.index);
 
-    let result = '';
+    // Build a DOM fragment with styled spans instead of modifying textContent
+    const fragment = document.createDocumentFragment();
     let lastIndex = 0;
+
     for (const m of measurements) {
       const end = m.index + m.length;
-      result += cleaned.slice(lastIndex, end);
-      result += ` (${m.converted})`;
+      // Text up to and including the match
+      fragment.appendChild(document.createTextNode(cleaned.slice(lastIndex, end)));
+      // Metric conversion as a styled span
+      const span = document.createElement('span');
+      span.className = 'im2m-converted';
+      span.textContent = ` (${m.converted})`;
+      fragment.appendChild(span);
       lastIndex = end;
     }
-    result += cleaned.slice(lastIndex);
 
-    if (result !== cleaned) {
-      textNode.textContent = result;
-      if (textNode.parentElement) {
-        textNode.parentElement.setAttribute(CONVERTED_ATTR, 'true');
-      }
+    // Remaining text after last match
+    if (lastIndex < cleaned.length) {
+      fragment.appendChild(document.createTextNode(cleaned.slice(lastIndex)));
+    }
+
+    const parent = textNode.parentNode;
+    if (parent) {
+      log('converted:', measurements.map(m => `"${m.matched}" → (${m.converted})`).join(', '),
+        '| parent:', parent.tagName + (parent.className ? '.' + parent.className.split(' ')[0] : ''));
+      parent.replaceChild(fragment, textNode);
+      parent.setAttribute(CONVERTED_ATTR, 'true');
     }
   }
 
@@ -200,18 +213,9 @@
   }
 
   function scanPage() {
-    let found = false;
-    for (const selector of AMAZON_CONTAINERS) {
-      const containers = document.querySelectorAll(selector);
-      for (const container of containers) {
-        scanContainer(container);
-        found = true;
-      }
-    }
-
-    if (!found) {
-      scanContainer(document.body);
-    }
+    log('scanPage: starting full body scan');
+    scanContainer(document.body);
+    log('scanPage: done');
   }
 
   // ===== MutationObserver for dynamic content =====
@@ -233,13 +237,29 @@
     });
   }
 
+  // ===== Styles =====
+  function injectStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+      .im2m-converted {
+        color: #067D62;
+        font-size: 0.85em;
+        white-space: nowrap;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   // ===== Preference handling =====
   let enabled = true;
 
   function init() {
+    log('init: content script loaded on', window.location.href);
+    injectStyles();
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
       chrome.storage.sync.get({ enabled: true }, (prefs) => {
         enabled = prefs.enabled;
+        log('init: enabled =', enabled);
         if (enabled) {
           scanPage();
           setupObserver();

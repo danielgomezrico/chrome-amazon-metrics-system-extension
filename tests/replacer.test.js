@@ -75,4 +75,18 @@ describe('replaceWithMetric', () => {
       'Only $10 in stock'
     );
   });
+
+  it('does not double-convert when metric already follows in parens', () => {
+    assert.equal(
+      replaceWithMetric('6.6FT (2.01 m)'),
+      '6.6FT (2.01 m)'
+    );
+  });
+
+  it('does not double-convert dimensions with existing metric', () => {
+    assert.equal(
+      replaceWithMetric('10 x 5 x 2 inches (25.40 \u00D7 12.70 \u00D7 5.08 cm)'),
+      '10 x 5 x 2 inches (25.40 \u00D7 12.70 \u00D7 5.08 cm)'
+    );
+  });
 });

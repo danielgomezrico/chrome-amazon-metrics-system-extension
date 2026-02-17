@@ -3,6 +3,7 @@
 Chrome extension that automatically converts feet and inches to meters and centimeters on Amazon product pages.
 
 ![Example](docs/example.png)
+![Example](docs/example2.png)
 
 ## Install locally
 

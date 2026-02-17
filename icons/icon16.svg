@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- Background -->
+  <rect width="16" height="16" rx="3" fill="#1a2744"/>
+
+  <!-- Ruler bar -->
+  <rect x="2" y="7.5" width="12" height="1" rx="0.5" fill="#2d4a7a"/>
+
+  <!-- Imperial ticks (top, white) — 3 ticks -->
+  <line x1="2" y1="4" x2="2" y2="7.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="8" y1="4" x2="8" y2="7.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="14" y1="4" x2="14" y2="7.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Metric ticks (bottom, accent blue) — 5 ticks -->
+  <line x1="2" y1="8.5" x2="2" y2="12" stroke="#4da6ff" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="5" y1="8.5" x2="5" y2="12" stroke="#4da6ff" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="8" y1="8.5" x2="8" y2="12" stroke="#4da6ff" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="11" y1="8.5" x2="11" y2="12" stroke="#4da6ff" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="14" y1="8.5" x2="14" y2="12" stroke="#4da6ff" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

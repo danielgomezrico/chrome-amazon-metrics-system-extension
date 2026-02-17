@@ -3,13 +3,24 @@
   "name": "Amazon Imperial to Metric",
   "version": "1.0.0",
   "description": "Converts imperial measurements (feet, inches) to metric (meters, centimeters) on Amazon product pages.",
+  "homepage_url": "https://github.com/Echo-Effects/chrome-amazon-metrics-system-extension",
   "permissions": ["storage"],
   "host_permissions": [
     "https://www.amazon.com/*",
     "https://www.amazon.co.uk/*",
     "https://www.amazon.ca/*",
     "https://www.amazon.com.au/*",
-    "https://www.amazon.in/*"
+    "https://www.amazon.in/*",
+    "https://www.amazon.de/*",
+    "https://www.amazon.fr/*",
+    "https://www.amazon.es/*",
+    "https://www.amazon.it/*",
+    "https://www.amazon.co.jp/*",
+    "https://www.amazon.com.br/*",
+    "https://www.amazon.nl/*",
+    "https://www.amazon.se/*",
+    "https://www.amazon.pl/*",
+    "https://www.amazon.com.mx/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -29,7 +40,17 @@
         "https://www.amazon.co.uk/*",
         "https://www.amazon.ca/*",
         "https://www.amazon.com.au/*",
-        "https://www.amazon.in/*"
+        "https://www.amazon.in/*",
+        "https://www.amazon.de/*",
+        "https://www.amazon.fr/*",
+        "https://www.amazon.es/*",
+        "https://www.amazon.it/*",
+        "https://www.amazon.co.jp/*",
+        "https://www.amazon.com.br/*",
+        "https://www.amazon.nl/*",
+        "https://www.amazon.se/*",
+        "https://www.amazon.pl/*",
+        "https://www.amazon.com.mx/*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"

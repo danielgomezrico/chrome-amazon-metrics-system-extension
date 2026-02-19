@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prepare": "node -e \"if(process.env.CI !== 'true') { require('child_process').execSync('sh scripts/setup-hooks.sh', {stdio:'inherit'}) }\"",
     "build": "esbuild src/content.js --bundle --format=iife --outfile=content.js",
     "test": "node --test --experimental-test-module-mocks",
     "clean": "rm -rf dist/",

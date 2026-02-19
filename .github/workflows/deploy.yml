@@ -41,7 +41,7 @@ jobs:
           echo "Version check passed: $MANIFEST_VERSION"
 
       - name: Run tests
-        run: node --test
+        run: npm test
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
 

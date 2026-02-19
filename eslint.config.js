@@ -1,12 +1,12 @@
-import js from "@eslint/js";
-import globals from "globals";
+import js from '@eslint/js';
+import globals from 'globals';
 
 export default [
   js.configs.recommended,
   {
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: "module",
+      sourceType: 'module',
       globals: {
         ...globals.browser,
         ...globals.es2022,
@@ -15,16 +15,16 @@ export default [
     },
     rules: {
       // Airbnb-inspired clarity rules
-      "no-var": "error",
-      "prefer-const": "error",
-      "object-shorthand": "error",
-      "prefer-template": "error",
-      "no-param-reassign": "error",
-      "eqeqeq": ["error", "always"],
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'object-shorthand': 'error',
+      'prefer-template': 'error',
+      'no-param-reassign': 'error',
+      eqeqeq: ['error', 'always'],
 
       // Quality
-      "no-unused-vars": "warn",
-      "no-console": "warn",
+      'no-unused-vars': 'warn',
+      'no-console': 'warn',
     },
   },
 ];

@@ -148,6 +148,89 @@ describe('findMeasurements', () => {
     });
   });
 
+  describe('fluid ounces', () => {
+    it('matches "8 fl oz"', () => {
+      const results = findMeasurements('8 fl oz');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fluid_oz');
+      assert.equal(results[0].value, 8);
+    });
+    it('"16 oz" matches weight_oz (not fluid_oz)', () => {
+      const results = findMeasurements('16 oz');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+    });
+    it('"12 ounces" matches weight_oz (not fluid_oz)', () => {
+      const results = findMeasurements('12 ounces');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+    });
+    it('"1 ounce" matches weight_oz (not fluid_oz)', () => {
+      const results = findMeasurements('1 ounce');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+    });
+    it('"16 onzas" matches weight_oz (not fluid_oz)', () => {
+      const results = findMeasurements('16 onzas');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+    });
+    it('"1 onza" matches weight_oz (not fluid_oz)', () => {
+      const results = findMeasurements('1 onza');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+    });
+    it('matches "8 fl. oz."', () => {
+      const results = findMeasurements('8 fl. oz.');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fluid_oz');
+      assert.equal(results[0].value, 8);
+    });
+    it('matches "20 fluid ounces"', () => {
+      const results = findMeasurements('20 fluid ounces');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fluid_oz');
+      assert.equal(results[0].value, 20);
+    });
+  });
+
+  describe('comma-separated numbers', () => {
+    it('matches "1,200 ft" as 1200 feet', () => {
+      const results = findMeasurements('1,200 ft');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'feet');
+      assert.equal(results[0].value, 1200);
+    });
+
+    it('matches "1,200 inches" as 1200 inches', () => {
+      const results = findMeasurements('1,200 inches');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'inches');
+      assert.equal(results[0].value, 1200);
+    });
+
+    it('matches "10,000 ft" as 10000 feet', () => {
+      const results = findMeasurements('10,000 ft');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'feet');
+      assert.equal(results[0].value, 10000);
+    });
+
+    it('matches "1,200.5 ft" as 1200.5 feet', () => {
+      const results = findMeasurements('1,200.5 ft');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'feet');
+      assert.equal(results[0].value, 1200.5);
+    });
+
+    it('matches "8 fl oz" with comma-number regex (no comma, still works)', () => {
+      const results = findMeasurements('8 fl oz');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fluid_oz');
+      assert.equal(results[0].value, 8);
+    });
+  });
+
   describe('no false positives', () => {
     it('ignores prices like $10', () => {
       const results = findMeasurements('Only $10 in stock');
@@ -181,7 +264,9 @@ describe('findMeasurements', () => {
       assert.equal(results.length, 0);
     });
     it('skips dimensions already followed by metric conversion', () => {
-      const results = findMeasurements('10 x 5 x 2 inches (25.40 \u00D7 12.70 \u00D7 5.08 cm)');
+      const results = findMeasurements(
+        '10 x 5 x 2 inches (25.40 \u00D7 12.70 \u00D7 5.08 cm)',
+      );
       assert.equal(results.length, 0);
     });
     it('still converts when no metric follows', () => {
@@ -215,6 +300,108 @@ describe('findMeasurements', () => {
     });
   });
 
+  describe('combined_lbs_oz', () => {
+    it('matches "2 lbs 4 oz"', () => {
+      const results = findMeasurements('2 lbs 4 oz');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'combined_lbs_oz');
+      assert.equal(results[0].pounds, 2);
+      assert.equal(results[0].oz, 4);
+    });
+
+    it('matches "5 pounds 8 ounces"', () => {
+      const results = findMeasurements('5 pounds 8 ounces');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'combined_lbs_oz');
+      assert.equal(results[0].pounds, 5);
+      assert.equal(results[0].oz, 8);
+    });
+
+    it('matches "1 lb 2 oz"', () => {
+      const results = findMeasurements('1 lb 2 oz');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'combined_lbs_oz');
+    });
+
+    it('matches "1,000 lbs 4 oz" with comma number', () => {
+      const results = findMeasurements('1,000 lbs 4 oz');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'combined_lbs_oz');
+      assert.equal(results[0].pounds, 1000);
+      assert.equal(results[0].oz, 4);
+    });
+  });
+
+  describe('pounds', () => {
+    it('matches "5 lbs"', () => {
+      const results = findMeasurements('5 lbs');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'pounds');
+      assert.equal(results[0].value, 5);
+    });
+
+    it('matches "2.5 pounds"', () => {
+      const results = findMeasurements('2.5 pounds');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'pounds');
+      assert.equal(results[0].value, 2.5);
+    });
+
+    it('matches "10 lb."', () => {
+      const results = findMeasurements('10 lb.');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'pounds');
+    });
+
+    it('does not match "album" (lb inside word)', () => {
+      const results = findMeasurements('Check out this album');
+      assert.equal(results.length, 0);
+    });
+
+    it('matches "1,200 lbs" with comma number', () => {
+      const results = findMeasurements('1,200 lbs');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'pounds');
+      assert.equal(results[0].value, 1200);
+    });
+  });
+
+  describe('weight_oz', () => {
+    it('matches "8 oz" as weight', () => {
+      const results = findMeasurements('8 oz');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+      assert.equal(results[0].value, 8);
+    });
+
+    it('matches "16 ounces" as weight', () => {
+      const results = findMeasurements('16 ounces');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+      assert.equal(results[0].value, 16);
+    });
+
+    it('matches "1 onza" as weight', () => {
+      const results = findMeasurements('1 onza');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+      assert.equal(results[0].value, 1);
+    });
+
+    it('"8 fl oz" still matches fluid_oz, not weight_oz', () => {
+      const results = findMeasurements('8 fl oz');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fluid_oz');
+    });
+
+    it('matches "1,500 oz" with comma number', () => {
+      const results = findMeasurements('1,500 oz');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+      assert.equal(results[0].value, 1500);
+    });
+  });
+
   describe('priority ordering', () => {
     it('matches combined before standalone when text has both patterns', () => {
       const results = findMeasurements('The cable is 5 feet 3 inches long');
@@ -228,6 +415,317 @@ describe('findMeasurements', () => {
       const results = findMeasurements('\u200e6.6 feet\u200f');
       assert.equal(results.length, 1);
       assert.equal(results[0].type, 'feet');
+    });
+  });
+
+  describe('sq_feet', () => {
+    it('matches "400 sq ft"', () => {
+      const results = findMeasurements('400 sq ft');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'sq_feet');
+      assert.equal(results[0].value, 400);
+    });
+
+    it('matches "100 square feet"', () => {
+      const results = findMeasurements('100 square feet');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'sq_feet');
+      assert.equal(results[0].value, 100);
+    });
+
+    it('matches "12 ft²"', () => {
+      const results = findMeasurements('12 ft²');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'sq_feet');
+      assert.equal(results[0].value, 12);
+    });
+
+    it('matches "1,200 sq ft" with comma number', () => {
+      const results = findMeasurements('1,200 sq ft');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'sq_feet');
+      assert.equal(results[0].value, 1200);
+    });
+
+    it('does not steal "400 ft cable" from feet pattern', () => {
+      const results = findMeasurements('400 ft cable');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'feet');
+      assert.equal(results[0].value, 400);
+    });
+
+    it('matches "50 sq. ft."', () => {
+      const results = findMeasurements('50 sq. ft.');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'sq_feet');
+      assert.equal(results[0].value, 50);
+    });
+  });
+
+  describe('sq_inches', () => {
+    it('matches "144 sq in"', () => {
+      const results = findMeasurements('144 sq in');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'sq_inches');
+      assert.equal(results[0].value, 144);
+    });
+
+    it('matches "10 square inches"', () => {
+      const results = findMeasurements('10 square inches');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'sq_inches');
+      assert.equal(results[0].value, 10);
+    });
+
+    it('matches "20 in²"', () => {
+      const results = findMeasurements('20 in²');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'sq_inches');
+      assert.equal(results[0].value, 20);
+    });
+  });
+
+  describe('gallons', () => {
+    it('matches "2 gallons"', () => {
+      const results = findMeasurements('2 gallons');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'gallons');
+      assert.equal(results[0].value, 2);
+    });
+
+    it('matches "1 gallon"', () => {
+      const results = findMeasurements('1 gallon');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'gallons');
+    });
+
+    it('matches "5 gal"', () => {
+      const results = findMeasurements('5 gal');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'gallons');
+      assert.equal(results[0].value, 5);
+    });
+
+    it('matches "0.5 gal."', () => {
+      const results = findMeasurements('0.5 gal.');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'gallons');
+      assert.equal(results[0].value, 0.5);
+    });
+
+    it('does not match "gallery"', () => {
+      const results = findMeasurements('Visit our gallery');
+      assert.equal(results.length, 0);
+    });
+
+    it('matches "1,000 gallons" with comma number', () => {
+      const results = findMeasurements('1,000 gallons');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'gallons');
+      assert.equal(results[0].value, 1000);
+    });
+  });
+
+  describe('quarts', () => {
+    it('matches "1 quart"', () => {
+      const results = findMeasurements('1 quart');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'quarts');
+      assert.equal(results[0].value, 1);
+    });
+
+    it('matches "3 qt"', () => {
+      const results = findMeasurements('3 qt');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'quarts');
+      assert.equal(results[0].value, 3);
+    });
+
+    it('matches "2 quarts"', () => {
+      const results = findMeasurements('2 quarts');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'quarts');
+    });
+
+    it('matches "1 qt bag"', () => {
+      const results = findMeasurements('1 qt bag');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'quarts');
+      assert.equal(results[0].value, 1);
+    });
+  });
+
+  describe('pints', () => {
+    it('matches "2 pints"', () => {
+      const results = findMeasurements('2 pints');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'pints');
+      assert.equal(results[0].value, 2);
+    });
+
+    it('matches "1 pint"', () => {
+      const results = findMeasurements('1 pint');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'pints');
+    });
+
+    it('matches "3 pt"', () => {
+      const results = findMeasurements('3 pt');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'pints');
+      assert.equal(results[0].value, 3);
+    });
+
+    it('matches "2 pt size" (pt followed by word is still a word boundary match)', () => {
+      const results = findMeasurements('2 pt size');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'pints');
+      assert.equal(results[0].value, 2);
+    });
+  });
+
+  describe('fahrenheit', () => {
+    it('matches "350°F"', () => {
+      const results = findMeasurements('350°F');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fahrenheit');
+      assert.equal(results[0].value, 350);
+    });
+
+    it('matches "72 °F" (space before F)', () => {
+      const results = findMeasurements('72 °F');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fahrenheit');
+      assert.equal(results[0].value, 72);
+    });
+
+    it('matches "350℉" (single character ℉)', () => {
+      const results = findMeasurements('350℉');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fahrenheit');
+      assert.equal(results[0].value, 350);
+    });
+
+    it('matches "350 degrees fahrenheit"', () => {
+      const results = findMeasurements('350 degrees fahrenheit');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fahrenheit');
+      assert.equal(results[0].value, 350);
+    });
+
+    it('matches "-40°F" (negative)', () => {
+      const results = findMeasurements('-40°F');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fahrenheit');
+      assert.equal(results[0].value, -40);
+    });
+
+    it('matches "72°F to 104°F" (two temps)', () => {
+      const results = findMeasurements('72°F to 104°F');
+      assert.equal(results.length, 2);
+      assert.equal(results[0].type, 'fahrenheit');
+      assert.equal(results[0].value, 72);
+      assert.equal(results[1].type, 'fahrenheit');
+      assert.equal(results[1].value, 104);
+    });
+
+    it('does not match "Model F150" (no degree symbol)', () => {
+      const results = findMeasurements('Model F150');
+      assert.equal(results.length, 0);
+    });
+
+    it('does not match "350 F" (no degree symbol)', () => {
+      const results = findMeasurements('350 F');
+      assert.equal(results.length, 0);
+    });
+  });
+
+  describe('psi', () => {
+    it('matches "35 PSI"', () => {
+      const results = findMeasurements('35 PSI');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'psi');
+      assert.equal(results[0].value, 35);
+    });
+
+    it('matches "120 psi"', () => {
+      const results = findMeasurements('120 psi');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'psi');
+    });
+
+    it('does not match "PSI Sigma" (no number prefix)', () => {
+      const results = findMeasurements('PSI Sigma fraternity');
+      assert.equal(results.length, 0);
+    });
+
+    it('matches "2,500 psi" with comma number', () => {
+      const results = findMeasurements('2,500 psi');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'psi');
+      assert.equal(results[0].value, 2500);
+    });
+  });
+
+  describe('mph', () => {
+    it('matches "60 mph"', () => {
+      const results = findMeasurements('60 mph');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'mph');
+      assert.equal(results[0].value, 60);
+    });
+
+    it('matches "20 miles per hour"', () => {
+      const results = findMeasurements('20 miles per hour');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'mph');
+      assert.equal(results[0].value, 20);
+    });
+
+    it('matches "100 MPH"', () => {
+      const results = findMeasurements('100 MPH');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'mph');
+    });
+
+    it('mph wins over miles for "20 miles per hour"', () => {
+      const results = findMeasurements('20 miles per hour');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'mph');
+    });
+  });
+
+  describe('miles', () => {
+    it('matches "5 miles"', () => {
+      const results = findMeasurements('5 miles');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'miles');
+      assert.equal(results[0].value, 5);
+    });
+
+    it('matches "1 mile"', () => {
+      const results = findMeasurements('1 mile');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'miles');
+    });
+
+    it('matches "0.5 mi"', () => {
+      const results = findMeasurements('0.5 mi');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'miles');
+      assert.equal(results[0].value, 0.5);
+    });
+
+    it('does not match "mild" (mi inside word)', () => {
+      const results = findMeasurements('5 mild days');
+      assert.equal(results.length, 0);
+    });
+
+    it('matches "1,000 miles" with comma number', () => {
+      const results = findMeasurements('1,000 miles');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'miles');
+      assert.equal(results[0].value, 1000);
     });
   });
 });

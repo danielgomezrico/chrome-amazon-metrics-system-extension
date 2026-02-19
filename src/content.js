@@ -5,9 +5,23 @@ import {
   convertFeetInches,
   convertDimensions2D,
   convertDimensions3D,
+  convertFlOz,
+  convertOz,
+  convertPounds,
+  convertPoundsOz,
+  convertGallons,
+  convertQuarts,
+  convertPints,
+  convertFahrenheit,
+  convertSqFeet,
+  convertSqInches,
+  convertPsi,
+  convertMph,
+  convertMiles,
 } from '../conversion.js';
 
 const LOG_PREFIX = '[im2m]';
+// eslint-disable-next-line no-console
 function log(...args) { console.log(LOG_PREFIX, ...args); }
 
 // ===== Conversion Dispatch =====
@@ -24,6 +38,32 @@ function convertMeasurement(measurement) {
       return convertFeet(measurement.value);
     case 'inches':
       return convertInches(measurement.value);
+    case 'fluid_oz':
+      return convertFlOz(measurement.value);
+    case 'combined_lbs_oz':
+      return convertPoundsOz(measurement.pounds, measurement.oz);
+    case 'pounds':
+      return convertPounds(measurement.value);
+    case 'weight_oz':
+      return convertOz(measurement.value);
+    case 'gallons':
+      return convertGallons(measurement.value);
+    case 'quarts':
+      return convertQuarts(measurement.value);
+    case 'pints':
+      return convertPints(measurement.value);
+    case 'fahrenheit':
+      return convertFahrenheit(measurement.value);
+    case 'sq_feet':
+      return convertSqFeet(measurement.value);
+    case 'sq_inches':
+      return convertSqInches(measurement.value);
+    case 'psi':
+      return convertPsi(measurement.value);
+    case 'mph':
+      return convertMph(measurement.value);
+    case 'miles':
+      return convertMiles(measurement.value);
     default:
       return null;
   }
@@ -90,7 +130,7 @@ function processTextNode(textNode) {
   const parent = textNode.parentNode;
   if (parent) {
     log('converted:', measurements.map(m => `"${m.matched}" → (${convertMeasurement(m)})`).join(', '),
-      '| parent:', parent.tagName + (parent.className ? '.' + parent.className.split(' ')[0] : ''));
+      `| parent: ${parent.tagName}${parent.className ? `.${parent.className.split(' ')[0]}` : ''}`);
     parent.replaceChild(fragment, textNode);
     parent.setAttribute(CONVERTED_ATTR, 'true');
   }

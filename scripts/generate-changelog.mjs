@@ -1,0 +1,100 @@
+#!/usr/bin/env node
+/**
+ * Generates a conventional changelog between the previous git tag and HEAD.
+ * Usage:
+ *   node scripts/generate-changelog.mjs            # prints to stdout
+ *   node scripts/generate-changelog.mjs --write    # appends to CHANGELOG.md
+ */
+import { execSync } from 'child_process';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+
+const root = resolve(fileURLToPath(import.meta.url), '../..');
+const args = process.argv.slice(2);
+const shouldWrite = args.includes('--write');
+
+// Get the previous tag (if any)
+let previousTag = null;
+try {
+  previousTag = execSync('git describe --tags --abbrev=0', {
+    cwd: root,
+    encoding: 'utf8',
+  }).trim();
+} catch {
+  // No previous tag — changelog covers all commits
+}
+
+// Get commits since last tag (or all commits if no tag)
+const range = previousTag ? `${previousTag}..HEAD` : 'HEAD';
+const gitLog = execSync(
+  `git log ${range} --pretty=format:"%s" --no-merges`,
+  { cwd: root, encoding: 'utf8' }
+).trim();
+
+if (!gitLog) {
+  const msg = 'No new commits since last release.';
+  console.log(msg);
+  process.exit(0);
+}
+
+// Parse conventional commits
+const commits = gitLog.split('\n').map(line => line.trim()).filter(Boolean);
+
+const sections = {
+  feat: [],
+  fix: [],
+  perf: [],
+  refactor: [],
+  docs: [],
+  chore: [],
+  other: [],
+};
+
+const CONVENTIONAL_RE = /^(\w+)(?:\(([^)]+)\))?!?: (.+)$/;
+
+for (const commit of commits) {
+  const match = commit.match(CONVENTIONAL_RE);
+  if (!match) {
+    sections.other.push(commit);
+    continue;
+  }
+  const [, type, scope, subject] = match;
+  const entry = scope ? `**${scope}:** ${subject}` : subject;
+  if (sections[type]) {
+    sections[type].push(entry);
+  } else {
+    sections.other.push(entry);
+  }
+}
+
+const sectionLabels = {
+  feat: '### Features',
+  fix: '### Bug Fixes',
+  perf: '### Performance Improvements',
+  refactor: '### Refactoring',
+  docs: '### Documentation',
+  chore: '### Chores',
+  other: '### Other Changes',
+};
+
+const lines = [];
+for (const [key, label] of Object.entries(sectionLabels)) {
+  if (sections[key].length === 0) continue;
+  lines.push(label);
+  for (const entry of sections[key]) {
+    lines.push(`- ${entry}`);
+  }
+  lines.push('');
+}
+
+const changelog = lines.join('\n').trimEnd();
+console.log(changelog);
+
+if (shouldWrite) {
+  const changelogPath = resolve(root, 'CHANGELOG.md');
+  const existing = existsSync(changelogPath) ? readFileSync(changelogPath, 'utf8') : '';
+  const newContent = `## Changes\n\n${changelog}\n\n---\n\n${existing}`;
+  writeFileSync(changelogPath, newContent);
+  console.error(`\nWritten to ${changelogPath}`);
+}

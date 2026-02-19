@@ -104,6 +104,9 @@ describe('convertDimensions2D', () => {
   it('converts 10 x 5 inches', () => {
     assert.equal(convertDimensions2D(10, 5), '25.40 x 12.70 cm');
   });
+  it('converts 2D dimensions to meters when max dimension is at least 100cm', () => {
+    assert.equal(convertDimensions2D(48, 24), '1.22 x 0.61 m');
+  });
 });
 
 describe('formatVolume', () => {

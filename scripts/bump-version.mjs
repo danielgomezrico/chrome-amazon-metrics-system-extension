@@ -34,6 +34,13 @@ if (!['patch', 'minor', 'major'].includes(bumpType)) {
   process.exit(1);
 }
 
+// Guard: working tree must be clean
+const status = run('git status --porcelain').trim();
+if (status) {
+  console.error('Error: Working tree is dirty. Commit or stash changes before releasing.');
+  process.exit(1);
+}
+
 // Read current version from manifest.json
 const manifestPath = resolve(root, 'manifest.json');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
@@ -54,7 +61,7 @@ writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
 
 // Generate and write changelog
 console.log('Generating changelog...');
-run(`node scripts/generate-changelog.mjs --write`);
+run(`node scripts/generate-changelog.mjs --write --version=${newVersion}`);
 
 // Stage everything
 run(`git add manifest.json package.json CHANGELOG.md`);

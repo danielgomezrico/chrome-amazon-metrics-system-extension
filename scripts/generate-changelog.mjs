@@ -13,11 +13,13 @@ import { fileURLToPath } from 'url';
 const root = resolve(fileURLToPath(import.meta.url), '../..');
 const args = process.argv.slice(2);
 const shouldWrite = args.includes('--write');
+const versionArg = args.find(a => a.startsWith('--version='));
+const version = versionArg ? versionArg.split('=')[1] : null;
 
 // Get the previous tag (if any)
 let previousTag = null;
 try {
-  previousTag = execSync('git describe --tags --abbrev=0', {
+  previousTag = execSync('git describe --tags --abbrev=0 HEAD^', {
     cwd: root,
     encoding: 'utf8',
   }).trim();
@@ -33,8 +35,13 @@ const gitLog = execSync(
 ).trim();
 
 if (!gitLog) {
-  const msg = 'No new commits since last release.';
-  console.log(msg);
+  console.log('No new commits since last release.');
+  if (shouldWrite) {
+    const changelogPath = resolve(root, 'CHANGELOG.md');
+    const existing = existsSync(changelogPath) ? readFileSync(changelogPath, 'utf8') : '';
+    writeFileSync(changelogPath, existing || '');
+    console.error('\nNo changes to write to CHANGELOG.md');
+  }
   process.exit(0);
 }
 
@@ -51,7 +58,7 @@ const sections = {
   other: [],
 };
 
-const CONVENTIONAL_RE = /^(\w+)(?:\(([^)]+)\))?!?: (.+)$/;
+const CONVENTIONAL_RE = /^([a-z]+)(?:\(([^)]+)\))?!?: (.+)$/;
 
 for (const commit of commits) {
   const match = commit.match(CONVENTIONAL_RE);
@@ -94,7 +101,10 @@ console.log(changelog);
 if (shouldWrite) {
   const changelogPath = resolve(root, 'CHANGELOG.md');
   const existing = existsSync(changelogPath) ? readFileSync(changelogPath, 'utf8') : '';
-  const newContent = `## Changes\n\n${changelog}\n\n---\n\n${existing}`;
+  const heading = version
+    ? `## v${version} — ${new Date().toISOString().slice(0, 10)}`
+    : '## Changes';
+  const newContent = `${heading}\n\n${changelog}\n\n---\n\n${existing}`;
   writeFileSync(changelogPath, newContent);
   console.error(`\nWritten to ${changelogPath}`);
 }

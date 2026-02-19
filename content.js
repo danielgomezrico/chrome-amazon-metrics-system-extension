@@ -34,7 +34,11 @@
       parse(m) {
         return {
           type: "dimensions_3d",
-          values: [parseFloat(m[1].replace(/,/g, "")), parseFloat(m[2].replace(/,/g, "")), parseFloat(m[3].replace(/,/g, ""))],
+          values: [
+            parseFloat(m[1].replace(/,/g, "")),
+            parseFloat(m[2].replace(/,/g, "")),
+            parseFloat(m[3].replace(/,/g, ""))
+          ],
           matched: m[0],
           index: m.index
         };
@@ -46,7 +50,10 @@
       parse(m) {
         return {
           type: "dimensions_2d",
-          values: [parseFloat(m[1].replace(/,/g, "")), parseFloat(m[2].replace(/,/g, ""))],
+          values: [
+            parseFloat(m[1].replace(/,/g, "")),
+            parseFloat(m[2].replace(/,/g, ""))
+          ],
           matched: m[0],
           index: m.index
         };
@@ -485,8 +492,7 @@
       log(
         "converted:",
         measurements.map((m) => `"${m.matched}" \u2192 (${convertMeasurement(m)})`).join(", "),
-        "| parent:",
-        parent.tagName + (parent.className ? "." + parent.className.split(" ")[0] : "")
+        `| parent: ${parent.tagName}${parent.className ? `.${parent.className.split(" ")[0]}` : ""}`
       );
       parent.replaceChild(fragment, textNode);
       parent.setAttribute(CONVERTED_ATTR, "true");

@@ -12,12 +12,15 @@
     "changelog": "node scripts/generate-changelog.mjs",
     "release:patch": "node scripts/bump-version.mjs patch",
     "release:minor": "node scripts/bump-version.mjs minor",
-    "release:major": "node scripts/bump-version.mjs major"
+    "release:major": "node scripts/bump-version.mjs major",
+    "deploy": "node scripts/deploy-to-store.mjs",
+    "deploy:dry-run": "node scripts/deploy-to-store.mjs --dry-run"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.2",
     "@commitlint/config-conventional": "^20.4.2",
     "@eslint/js": "10.0.1",
+    "chrome-webstore-upload": "^4.0.3",
     "esbuild": "0.25.12",
     "eslint": "10.0.0",
     "globals": "17.3.0",

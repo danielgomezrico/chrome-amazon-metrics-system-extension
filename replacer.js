@@ -5,6 +5,7 @@ import {
   convertFeetInches,
   convertDimensions2D,
   convertDimensions3D,
+  convertFlOz,
 } from './conversion.js';
 
 function convertMeasurement(measurement) {
@@ -20,6 +21,8 @@ function convertMeasurement(measurement) {
       return convertFeet(measurement.value);
     case 'inches':
       return convertInches(measurement.value);
+    case 'fluid_oz':
+      return convertFlOz(measurement.value);
     default:
       return null;
   }

@@ -1,5 +1,7 @@
 # Amazon Imperial to Metric
 
+[![codecov](https://codecov.io/gh/danielgomezrico/chrome-amazon-metrics-system-extension/graph/badge.svg)](https://codecov.io/gh/dan/chrome-metrics-changer)
+
 Chrome extension that automatically converts feet and inches to meters and centimeters on Amazon product pages.
 
 ![Hero](screenshots/screenshot-1-hero.png)

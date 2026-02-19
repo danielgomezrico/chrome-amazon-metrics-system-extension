@@ -10,6 +10,7 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.es2022,
+        ...globals.webextensions,
       },
     },
     rules: {

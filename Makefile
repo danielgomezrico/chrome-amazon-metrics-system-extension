@@ -21,7 +21,7 @@ clean:
 JS_FILES := $(shell find . -name "*.js" \
 	-not -path "./node_modules/*" \
 	-not -path "./dist/*" \
-	-not -name "content.js")
+	-not -path "./content.js")
 
 # Format all JS files with Prettier
 format:

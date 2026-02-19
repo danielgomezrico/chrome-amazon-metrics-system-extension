@@ -16,7 +16,7 @@ jobs:
       - run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
-      - run: node --test --experimental-test-coverage --test-coverage-reporter=lcov
+      - run: npx --yes c8 --reporter=lcov node --test
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

@@ -53,7 +53,7 @@ describe('Cross-pattern conflicts', () => {
   });
 });
 
-describe('Fluid oz ambiguity (current behavior)', () => {
+describe('Fluid oz disambiguation', () => {
   it('"8 fl oz" — currently matches fluid_oz (correct, should stay)', () => {
     const results = findMeasurements('8 fl oz');
     assert.equal(results.length, 1);
@@ -61,14 +61,14 @@ describe('Fluid oz ambiguity (current behavior)', () => {
     assert.equal(results[0].value, 8);
   });
 
-  it('"8 oz" — now matches weight_oz', () => {
+  it('"8 oz" alone → weight_oz (no context)', () => {
     const results = findMeasurements('8 oz');
     assert.equal(results.length, 1);
     assert.equal(results[0].type, 'weight_oz');
     assert.equal(results[0].value, 8);
   });
 
-  it('"16 ounces" — now matches weight_oz', () => {
+  it('"16 ounces" alone → weight_oz', () => {
     const results = findMeasurements('16 ounces');
     assert.equal(results.length, 1);
     assert.equal(results[0].type, 'weight_oz');
@@ -80,6 +80,18 @@ describe('Fluid oz ambiguity (current behavior)', () => {
     assert.equal(results.length, 1);
     assert.equal(results[0].type, 'fluid_oz');
     assert.equal(results[0].value, 8);
+  });
+
+  it('"8 oz spray bottle" → fluid_oz', () => {
+    const results = findMeasurements('8 oz spray bottle');
+    assert.equal(results.length, 1);
+    assert.equal(results[0].type, 'fluid_oz');
+  });
+
+  it('"16 ounces of flour" → weight_oz', () => {
+    const results = findMeasurements('16 ounces of flour');
+    assert.equal(results.length, 1);
+    assert.equal(results[0].type, 'weight_oz');
   });
 });
 
@@ -307,8 +319,8 @@ describe('Overlap priority with existing patterns', () => {
     assert.equal(results[1].value, 10);
   });
 
-  it('"32 fl oz bottle, 4 oz per serving" — "32 fl oz" is fluid_oz, "4 oz" is weight_oz', () => {
-    const results = findMeasurements('32 fl oz bottle, 4 oz per serving');
+  it('"32 fl oz container, 4 oz protein per serving" — "32 fl oz" is fluid_oz, "4 oz" is weight_oz (dry context)', () => {
+    const results = findMeasurements('32 fl oz container, 4 oz protein per serving');
     assert.equal(results.length, 2);
     assert.equal(results[0].type, 'fluid_oz');
     assert.equal(results[0].value, 32);

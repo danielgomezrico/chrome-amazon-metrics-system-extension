@@ -192,6 +192,18 @@ describe('findMeasurements', () => {
       assert.equal(results[0].type, 'fluid_oz');
       assert.equal(results[0].value, 20);
     });
+    it('"18 oz water bottle" → fluid_oz (liquid context)', () => {
+      const results = findMeasurements('18 oz water bottle');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'fluid_oz');
+      assert.equal(results[0].value, 18);
+    });
+    it('"16 oz coffee beans" → weight_oz (dry context wins)', () => {
+      const results = findMeasurements('16 oz coffee beans');
+      assert.equal(results.length, 1);
+      assert.equal(results[0].type, 'weight_oz');
+      assert.equal(results[0].value, 16);
+    });
   });
 
   describe('comma-separated numbers', () => {

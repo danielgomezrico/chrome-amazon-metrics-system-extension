@@ -241,6 +241,20 @@
       }
     }
   ];
+  var LIQUID_KEYWORDS = /\b(bottle|water|liquid|beverage|juice|milk|drink|rinse|pitcher|jug|carafe|canteen|thermos|tumbler|flask|spray|solution)\b/i;
+  var DRY_KEYWORDS = /\b(bean|beans|powder|flour|coffee|grain|seed|seeds|nut|nuts|spice|spices|herb|herbs|sugar|salt|rice|oat|oats|protein|supplement|extract)\b/i;
+  var CONTEXT_WINDOW = 50;
+  function disambiguate(results, text) {
+    return results.map((r) => {
+      if (r.type !== "weight_oz") return r;
+      const start = Math.max(0, r.index - CONTEXT_WINDOW);
+      const end = Math.min(text.length, r.index + r.matched.length + CONTEXT_WINDOW);
+      const ctx = text.slice(start, end);
+      if (DRY_KEYWORDS.test(ctx)) return r;
+      if (LIQUID_KEYWORDS.test(ctx)) return { ...r, type: "fluid_oz" };
+      return r;
+    });
+  }
   var ALREADY_CONVERTED = /^\s*\(-?\d+(?:\.\d+)?(?:\s*[×x]\s*-?\d+(?:\.\d+)?)*\s*(?:cm|m|mL|L|g|kg|°C|bar|km\/h|km|m²|cm²)\)/;
   function findMeasurements(text) {
     const cleaned = text.replace(DIRECTION_MARKERS, "");
@@ -264,7 +278,7 @@
       }
     }
     results.sort((a, b) => a.index - b.index);
-    return results;
+    return disambiguate(results, cleaned);
   }
 
   // conversion.js

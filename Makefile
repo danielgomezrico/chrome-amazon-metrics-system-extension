@@ -13,7 +13,7 @@ build: clean test
 	@echo "Built $(DIST_DIR)/$(ZIP_NAME)"
 
 test:
-	node --test
+	node --test --experimental-test-module-mocks
 
 clean:
 	rm -rf $(DIST_DIR)

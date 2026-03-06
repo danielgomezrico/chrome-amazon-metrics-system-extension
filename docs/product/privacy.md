@@ -1,10 +1,10 @@
-# Privacy Policy - Amazon Imperial to Metric
+# Privacy Policy - Amazon Imperial to Metric Converter
 
 **Last updated:** 2026-02-16
 
 ## Overview
 
-Amazon Imperial to Metric is an open-source Chrome extension that converts imperial measurements (feet, inches) to metric (meters, centimeters) on Amazon product pages. This extension is committed to protecting your privacy.
+Amazon Imperial to Metric Converter is an open-source Chrome extension that converts imperial measurements (feet, inches) to metric (meters, centimeters) on Amazon product pages. This extension is committed to protecting your privacy.
 
 **Source code:** [GitHub Repository](https://github.com/Echo-Effects/chrome-amazon-metrics-system-extension)
 

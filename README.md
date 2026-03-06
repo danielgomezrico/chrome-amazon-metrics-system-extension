@@ -1,4 +1,4 @@
-# Amazon Imperial to Metric
+# Amazon Imperial to Metric Converter
 
 [![codecov](https://codecov.io/gh/danielgomezrico/chrome-amazon-metrics-system-extension/graph/badge.svg)](https://codecov.io/gh/dan/chrome-metrics-changer)
 

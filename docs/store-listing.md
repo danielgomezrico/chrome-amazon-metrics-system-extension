@@ -1,4 +1,4 @@
-# Chrome Web Store Listing - Amazon Imperial to Metric
+# Chrome Web Store Listing - Amazon Imperial to Metric Converter
 
 This document contains all text content needed for the Chrome Web Store listing.
 
@@ -17,7 +17,7 @@ This document contains all text content needed for the Chrome Web Store listing.
 ```
 Instantly convert imperial measurements to metric on Amazon product pages.
 
-Amazon Imperial to Metric automatically detects feet, inches, and dimension formats on Amazon product listings and displays the metric equivalents (meters, centimeters) right next to the original measurements. No more mental math or switching to a calculator.
+Amazon Imperial to Metric Converter automatically detects feet, inches, and dimension formats on Amazon product listings and displays the metric equivalents (meters, centimeters) right next to the original measurements. No more mental math or switching to a calculator.
 
 FEATURES:
 • Converts feet, inches, and combined feet+inches to meters/centimeters

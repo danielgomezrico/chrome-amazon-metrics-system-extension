@@ -1,6 +1,6 @@
 # Chrome Web Store Submission Guide
 
-Step-by-step instructions for publishing "Amazon Imperial to Metric" to the Chrome Web Store.
+Step-by-step instructions for publishing "Amazon Imperial to Metric Converter" to the Chrome Web Store.
 
 ---
 
@@ -65,7 +65,7 @@ The Chrome Web Store requires at least one screenshot. Recommended: 3-5.
 
 Design suggestions:
 - Use the 128px extension icon centered or left-aligned
-- Text: "Amazon Imperial to Metric"
+- Text: "Amazon Imperial to Metric Converter"
 - Subtitle: "Instant unit conversions on Amazon"
 - Background: Clean gradient or solid color matching the icon palette (#1a2744)
 
